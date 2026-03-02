@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../models/breed.dart';
-import '../models/cat.dart';
-import '../services/api_service.dart';
+import '../../core/di/service_locator.dart';
+import '../../domain/entities/breed.dart';
+import '../../domain/entities/cat.dart';
+import '../../domain/repositories/cat_repository.dart';
 
 class BreedDetailScreen extends StatefulWidget {
   final Breed breed;
@@ -14,7 +15,7 @@ class BreedDetailScreen extends StatefulWidget {
 }
 
 class _BreedDetailScreenState extends State<BreedDetailScreen> {
-  final ApiService _apiService = ApiService();
+  final CatRepository _catRepository = sl<CatRepository>();
   List<Cat> _breedCats = [];
   bool _isLoading = false;
 
@@ -30,7 +31,7 @@ class _BreedDetailScreenState extends State<BreedDetailScreen> {
     });
 
     try {
-      final cats = await _apiService.getCatsByBreed(widget.breed.id);
+      final cats = await _catRepository.getCatsByBreed(widget.breed.id);
       setState(() {
         _breedCats = cats;
         _isLoading = false;
@@ -59,7 +60,7 @@ class _BreedDetailScreenState extends State<BreedDetailScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -73,7 +74,7 @@ class _BreedDetailScreenState extends State<BreedDetailScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, size: 24, color: color),
@@ -130,7 +131,9 @@ class _BreedDetailScreenState extends State<BreedDetailScreen> {
                     widget.breed.name,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      shadows: [Shadow(color: Colors.black45, blurRadius: 4)],
+                      shadows: [
+                        Shadow(color: Colors.black45, blurRadius: 4),
+                      ],
                     ),
                   ),
                   background: _isLoading || _breedCats.isEmpty
@@ -165,15 +168,12 @@ class _BreedDetailScreenState extends State<BreedDetailScreen> {
                         ),
                 ),
               ),
-
-              // Content
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Info card
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -181,7 +181,7 @@ class _BreedDetailScreenState extends State<BreedDetailScreen> {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -246,8 +246,6 @@ class _BreedDetailScreenState extends State<BreedDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-
-                      // Description
                       const Text(
                         'Описание',
                         style: TextStyle(
@@ -263,7 +261,7 @@ class _BreedDetailScreenState extends State<BreedDetailScreen> {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -275,8 +273,6 @@ class _BreedDetailScreenState extends State<BreedDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-
-                      // Temperament
                       if (widget.breed.temperament.isNotEmpty) ...[
                         const Text(
                           'Темперамент',
@@ -314,8 +310,6 @@ class _BreedDetailScreenState extends State<BreedDetailScreen> {
                         ),
                         const SizedBox(height: 24),
                       ],
-
-                      // Characteristics
                       const Text(
                         'Характеристики',
                         style: TextStyle(

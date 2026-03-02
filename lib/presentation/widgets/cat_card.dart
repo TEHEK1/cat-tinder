@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../models/cat.dart';
+import '../../domain/entities/cat.dart';
 
 class CatCard extends StatelessWidget {
   final Cat cat;
@@ -10,6 +10,8 @@ class CatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final breed = cat.primaryBreed;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -18,7 +20,7 @@ class CatCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -60,7 +62,7 @@ class CatCard extends StatelessWidget {
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
                       colors: [
-                        Colors.black.withOpacity(0.8),
+                        Colors.black.withValues(alpha: 0.8),
                         Colors.transparent,
                       ],
                     ),
@@ -69,9 +71,9 @@ class CatCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (cat.hasBreed) ...[
+                      if (breed != null) ...[
                         Text(
-                          cat.primaryBreed!.name,
+                          breed.name,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 28,
@@ -80,9 +82,9 @@ class CatCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          cat.primaryBreed!.origin,
+                          breed.origin,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 16,
                           ),
                         ),
@@ -110,7 +112,7 @@ class CatCard extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Row(

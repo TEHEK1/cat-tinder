@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/breed.dart';
-import '../services/api_service.dart';
+import '../../core/di/service_locator.dart';
+import '../../domain/entities/breed.dart';
+import '../../domain/repositories/cat_repository.dart';
 import '../utils/error_handler.dart';
 import 'breed_detail_screen.dart';
 
@@ -12,7 +13,7 @@ class BreedsListScreen extends StatefulWidget {
 }
 
 class _BreedsListScreenState extends State<BreedsListScreen> {
-  final ApiService _apiService = ApiService();
+  final CatRepository _catRepository = sl<CatRepository>();
   List<Breed> _breeds = [];
   bool _isLoading = false;
 
@@ -28,7 +29,7 @@ class _BreedsListScreenState extends State<BreedsListScreen> {
     });
 
     try {
-      final breeds = await _apiService.getAllBreeds();
+      final breeds = await _catRepository.getAllBreeds();
       setState(() {
         _breeds = breeds;
         _isLoading = false;
@@ -83,7 +84,7 @@ class _BreedsListScreenState extends State<BreedsListScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -94,7 +95,6 @@ class _BreedsListScreenState extends State<BreedsListScreen> {
                   ],
                 ),
               ),
-
               Expanded(
                 child: _isLoading
                     ? const Center(

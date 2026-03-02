@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../models/cat.dart';
-import '../services/api_service.dart';
+import '../../core/di/service_locator.dart';
+import '../../data/datasources/app_preferences.dart';
+import '../../domain/entities/cat.dart';
+import '../../domain/repositories/cat_repository.dart';
 import '../utils/error_handler.dart';
 import '../widgets/cat_card.dart';
 import 'cat_detail_screen.dart';
@@ -14,7 +15,8 @@ class SwipeScreen extends StatefulWidget {
 }
 
 class _SwipeScreenState extends State<SwipeScreen> {
-  final ApiService _apiService = ApiService();
+  final CatRepository _catRepository = sl<CatRepository>();
+  final AppPreferences _prefs = sl<AppPreferences>();
   Cat? _currentCat;
   bool _isLoading = false;
   int _likeCount = 0;
@@ -23,20 +25,8 @@ class _SwipeScreenState extends State<SwipeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadLikeCount();
+    _likeCount = _prefs.likeCount;
     _loadRandomCat();
-  }
-
-  Future<void> _loadLikeCount() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _likeCount = prefs.getInt('like_count') ?? 0;
-    });
-  }
-
-  Future<void> _saveLikeCount() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('like_count', _likeCount);
   }
 
   Future<void> _loadRandomCat() async {
@@ -45,7 +35,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
     });
 
     try {
-      final cat = await _apiService.getRandomCat();
+      final cat = await _catRepository.getRandomCat();
       setState(() {
         _currentCat = cat;
         _isLoading = false;
@@ -64,7 +54,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
     setState(() {
       _likeCount++;
     });
-    _saveLikeCount();
+    _prefs.setLikeCount(_likeCount);
     _loadRandomCat();
     ScaffoldMessenger.of(context).clearSnackBars();
     ErrorHandler.showSnackBar(context, '❤️ Лайк!');
@@ -95,11 +85,12 @@ class _SwipeScreenState extends State<SwipeScreen> {
   }
 
   void _openCatDetail() {
-    if (_currentCat != null) {
+    final cat = _currentCat;
+    if (cat != null) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => CatDetailScreen(cat: _currentCat!),
+          builder: (context) => CatDetailScreen(cat: cat),
         ),
       );
     }
@@ -141,7 +132,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.red.withOpacity(0.3),
+                            color: Colors.red.withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -206,7 +197,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
                           child: Transform.rotate(
                             angle: _dragPosition * 0.001,
                             child: CatCard(
-                              cat: _currentCat!,
+                              cat: _currentCat ?? Cat(id: '', url: '', breeds: []),
                               onTap: _openCatDetail,
                             ),
                           ),

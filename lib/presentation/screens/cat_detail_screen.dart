@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../models/cat.dart';
+import '../../domain/entities/cat.dart';
 
 class CatDetailScreen extends StatelessWidget {
   final Cat cat;
@@ -74,12 +74,11 @@ class CatDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-
           SliverToBoxAdapter(
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(30),
                   topRight: Radius.circular(30),
                 ),
@@ -90,7 +89,6 @@ class CatDetailScreen extends StatelessWidget {
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Breed name
                           Text(
                             breed.name,
                             style: const TextStyle(
@@ -99,8 +97,6 @@ class CatDetailScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 8),
-
-                          // Origin and lifespan
                           Row(
                             children: [
                               Icon(
@@ -133,8 +129,6 @@ class CatDetailScreen extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 24),
-
-                          // Description
                           const Text(
                             'Описание',
                             style: TextStyle(
@@ -148,8 +142,6 @@ class CatDetailScreen extends StatelessWidget {
                             style: const TextStyle(fontSize: 16, height: 1.5),
                           ),
                           const SizedBox(height: 24),
-
-                          // Temperament
                           if (breed.temperament.isNotEmpty) ...[
                             const Text(
                               'Темперамент',
@@ -174,8 +166,6 @@ class CatDetailScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 24),
                           ],
-
-                          // Characteristics
                           const Text(
                             'Характеристики',
                             style: TextStyle(
@@ -205,8 +195,6 @@ class CatDetailScreen extends StatelessWidget {
                             Icons.child_care,
                           ),
                           const SizedBox(height: 24),
-
-                          // Weight
                           if (breed.weight['metric']?.isNotEmpty ?? false) ...[
                             const Text(
                               'Вес',
